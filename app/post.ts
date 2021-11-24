@@ -7,6 +7,7 @@ import { processMarkdown } from '@ryanflorence/md';
 export type Post = {
   slug: string;
   html?: string;
+  markdown?: string;
   title: string;
 };
 
@@ -50,4 +51,15 @@ export const getPost = async (slug: string): Promise<Post> => {
   );
   const html = await processMarkdown(body);
   return { slug, html, title: attributes.title };
+};
+
+export const createPost = async (post: Post) => {
+  const md = `---
+title: ${post.title}
+---
+
+${post.markdown}`;
+
+  await fs.writeFile(path.join(POSTS_PATH, `${post.slug}.md`), md);
+  return getPost(post.slug);
 };
